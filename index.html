@@ -35,7 +35,6 @@
   @keyframes blink{50%{opacity:0;}}
   @keyframes modalIn{from{transform:scale(.92); opacity:0;}to{transform:scale(1); opacity:1;}}
   @keyframes shine{0%{transform:translateX(-100%);}60%,100%{transform:translateX(200%);}}
-  @keyframes popIn{0%{opacity:0; transform:scale(.85);}70%{transform:scale(1.03);}100%{opacity:1; transform:scale(1);}}
 
   .reveal{opacity:0; transform:translateY(30px); transition:opacity .7s ease, transform .7s ease;}
   .reveal.in{opacity:1; transform:translateY(0);}
@@ -150,7 +149,7 @@
   .pricing-cards{display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin-top:40px;}
   .price-card{
     background:#fff; border:1px solid var(--line); border-radius:var(--radius);
-    width:240px; padding:26px 22px; text-align:center;
+    width:250px; padding:26px 22px; text-align:center;
     box-shadow:0 1px 2px rgba(0,0,0,.03), 0 8px 24px rgba(0,0,0,.06);
     transition:transform .18s, box-shadow .18s;
     animation:fadeUp .5s ease both;
@@ -389,10 +388,10 @@
 
   var pricing = {
     bots: [
-      { tag:"Bot", name:"10 comandos", price:"$15", feats:["10 comandos","Configuración básica","Soporte 1 mes"] },
-      { tag:"Bot", name:"20 comandos", price:"$25", feats:["20 comandos","Roles y moderación","Soporte 2 meses"] },
-      { tag:"Bot", name:"30 comandos", price:"$35", feats:["30 comandos","Tickets y economía","Soporte 3 meses"] },
-      { tag:"Bot", name:"40 comandos", price:"$50", featured:true, feats:["40 comandos","Todo incluido","Soporte 6 meses"] }
+      { tag:"Bot", name:"10 comandos", price:"$15", feats:["10 comandos personalizados","Configuración básica","Soporte 1 mes"] },
+      { tag:"Bot", name:"20 comandos", price:"$25", feats:["20 comandos personalizados","Configuración avanzada","Soporte 2 meses"] },
+      { tag:"Bot", name:"30 comandos", price:"$35", feats:["30 comandos personalizados","Configuración avanzada","Soporte 3 meses"] },
+      { tag:"Bot", name:"40 comandos", price:"$50", featured:true, feats:["40 comandos personalizados","Todo incluido","Soporte 6 meses"] }
     ],
     webs: [
       { tag:"Web", name:"Web sin base de datos", price:"$40", feats:["Web estática","Diseño responsive","Soporte 1 mes"] },
@@ -479,4 +478,8 @@
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); observer.unobserve(e.target); }
     });
- 
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){ observer.observe(el); });
+</script>
+
+</body
