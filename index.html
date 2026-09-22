@@ -66,7 +66,7 @@
   .section-label .num{color:var(--dim);}
   h2{font-size:30px; font-weight:700; letter-spacing:-.01em; line-height:1.2;}
 
-  /* Proyectos — tarjetas estilo Apple */
+  /* Proyectos — tarjetas clicables estilo Apple */
   .projects-grid{
     display:grid; grid-template-columns:repeat(2,1fr); gap:32px;
     margin-top:36px;
@@ -76,6 +76,7 @@
     padding:0; overflow:hidden; display:flex; flex-direction:column;
     box-shadow:0 1px 2px rgba(0,0,0,.03), 0 8px 24px rgba(0,0,0,.06);
     transition:transform .18s, box-shadow .18s;
+    cursor:pointer;
   }
   .project-card:hover{transform:translateY(-4px); box-shadow:0 2px 4px rgba(0,0,0,.05), 0 16px 40px rgba(0,0,0,.10);}
   .pc-head{padding:22px 24px;}
@@ -83,11 +84,37 @@
   .pc-name{font-size:24px; font-weight:700; letter-spacing:-.01em; margin-top:6px;}
   .pc-media{background:#f6f6f8; display:flex; align-items:center; justify-content:center; padding:26px; min-height:220px;}
   .pc-media img{max-width:100%; max-height:300px; border-radius:14px; box-shadow:0 6px 22px rgba(0,0,0,.12);}
-  .pc-link{display:inline-flex; align-items:center; gap:6px; color:var(--accent); font-weight:600; font-size:13.5px; border-bottom:1px solid transparent; transition:border-color .15s;}
-  .pc-link:hover{border-bottom-color:var(--accent);}
   .pc-foot{padding:20px 24px;}
   .pc-desc{color:var(--gray); font-size:14px; line-height:1.6;}
-  .pc-foot .pc-link{margin-top:14px; display:block;}
+  .pc-hint{font-size:12px; color:var(--dim); margin-top:10px; display:flex; align-items:center; gap:6px;}
+
+  /* Modal de detalle */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(13,13,15,.55); backdrop-filter:blur(6px);
+    display:none; align-items:center; justify-content:center; z-index:100;
+    opacity:0; transition:opacity .2s;
+  }
+  .modal-overlay.open{display:flex; opacity:1;}
+  .modal{
+    background:#fff; border-radius:24px; max-width:560px; width:calc(100% - 40px);
+    max-height:88vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,.18);
+    animation:modalIn .22s ease;
+  }
+  @keyframes modalIn{from{transform:scale(.94); opacity:0;}to{transform:scale(1); opacity:1;}}
+  .modal-head{padding:20px 24px; display:flex; justify-content:space-between; align-items:center;}
+  .modal-head h3{font-size:22px; font-weight:700; letter-spacing:-.01em;}
+  .modal-close{background:none; border:none; font-size:22px; color:var(--gray); cursor:pointer; line-height:1; padding:4px 8px; border-radius:8px;}
+  .modal-close:hover{background:#f2f2f4; color:var(--fg);}
+  .modal-media{background:#f6f6f8; display:flex; align-items:center; justify-content:center; padding:22px; min-height:200px;}
+  .modal-media img{max-width:100%; max-height:320px; border-radius:14px; box-shadow:0 6px 22px rgba(0,0,0,.12);}
+  .modal-body{padding:22px 24px;}
+  .modal-body p{color:var(--gray); font-size:14.5px; line-height:1.65; margin-bottom:14px;}
+  .modal-body ul{list-style:none; padding:0; margin:0;}
+  .modal-body li{display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); font-size:14px; color:var(--fg);}
+  .modal-body li::before{content:"•"; color:var(--accent); font-weight:700;}
+  .modal-body li:last-child{border-bottom:none;}
+  .modal-link{display:inline-flex; align-items:center; gap:6px; color:var(--accent); font-weight:600; font-size:13.5px; margin-top:14px; border-bottom:1px solid transparent; transition:border-color .15s;}
+  .modal-link:hover{border-bottom-color:var(--accent);}
 
   /* contact — split panel treatment */
   .contact-split{border-top:1px solid var(--line); background:#0d0d0f; color:#fff;}
@@ -177,7 +204,7 @@
 
     <div class="projects-grid">
 
-      <article class="project-card">
+      <article class="project-card" onclick="openModal('bot')">
         <div class="pc-head">
           <div class="pc-num">01</div>
           <h3 class="pc-name">Bot Medellín RP</h3>
@@ -187,10 +214,11 @@
         </div>
         <div class="pc-foot">
           <p class="pc-desc">Bot de Discord con sistema de tickets, moderación y roles automáticos.</p>
+          <span class="pc-hint">Toca para ver más →</span>
         </div>
       </article>
 
-      <article class="project-card">
+      <article class="project-card" onclick="openModal('dash')">
         <div class="pc-head">
           <div class="pc-num">02</div>
           <h3 class="pc-name">Dashboard Medellín RP</h3>
@@ -200,7 +228,7 @@
         </div>
         <div class="pc-foot">
           <p class="pc-desc">Panel web de gestión y estadísticas, conectado en tiempo real con el bot.</p>
-          <a class="pc-link" href="https://medellin-rp.duckdns.org/" target="_blank" rel="noopener">Ver sitio →</a>
+          <span class="pc-hint">Toca para ver más →</span>
         </div>
       </article>
 
@@ -233,7 +261,74 @@
   </div>
 </footer>
 
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="m-title">Proyecto</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-media" id="m-media"></div>
+    <div class="modal-body" id="m-body"></div>
+  </div>
+</div>
+
 <script>
+  var projects = {
+    bot: {
+      title: "Bot Medellín RP",
+      img: "https://cdn.discordapp.com/attachments/1255629564437331991/1551938682234081350/image.png?ex=6ab3cb07&is=6ab27987&hm=a255a75badfcbf12295c639c2ee06abb7e46726a7f40b4b5ca9c5dbf4fdc414e&",
+      desc: "Bot de Discord completo para la comunidad de Medellín RP, con sistema de identificación ciudadana, tickets, moderación y roles automáticos.",
+      features: [
+        "Sistema de cédula e identificación",
+        "Apertura de tickets y reportes",
+        "Economía y transacciones",
+        "Moderación y roles automáticos"
+      ]
+    },
+    dash: {
+      title: "Dashboard Medellín RP",
+      img: "https://cdn.discordapp.com/attachments/1255629564437331991/1551939878227542076/image.png?ex=6ab3cc24&is=6ab27aa4&hm=d405a97b688d8696a8b3b83d9296ce257807c0e1c4172bc8b237da170b7757db&",
+      desc: "Panel web de gestión y estadísticas, conectado en tiempo real con el bot para administrar toda la ciudad.",
+      features: [
+        "Panel civil y gestión de ciudadanos",
+        "Estadísticas en tiempo real",
+        "Control de economía y servicios",
+        "Administración y reportes"
+      ],
+      link: "https://medellin-rp.duckdns.org/",
+      linkText: "Ver sitio →"
+    }
+  };
+
+  function openModal(key){
+    var p = projects[key];
+    document.getElementById('m-title').textContent = p.title;
+    document.getElementById('m-title').textContent = p.title;
+    document.getElementById('m-media').innerHTML = '<img src="'+p.img+'" alt="'+p.title+'">';
+    var html = '<p>'+p.desc+'</p><ul>';
+    p.features.forEach(function(f){ html += '<li>'+f+'</li>'; });
+    html += '</ul>';
+    if(p.link){
+      html += '<a class="modal-link" href="'+p.link+'" target="_blank" rel="noopener">'+p.linkText+'</a>';
+    }
+    document.getElementById('m-body').innerHTML = html;
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(){
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('modal').addEventListener('click', function(e){
+    if(e.target === this) closeModal();
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeModal();
+  });
+
   function goTo(name){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     var target = document.getElementById('page-'+name) || document.getElementById('page-inicio');
@@ -252,3 +347,4 @@
 
 </body>
 </html>
+
