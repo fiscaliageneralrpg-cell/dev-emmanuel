@@ -10,7 +10,7 @@
 <style>
   :root{
     --bg:#fbfbfd; --line:#e5e5e7; --fg:#1d1d1f; --gray:#6e6e73; --dim:#c7c7cc;
-    --accent:#0071e3; --radius:20px;
+    --accent:#0071e3; --accent2:#5e5ce6; --radius:20px;
     box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
   }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -26,37 +26,58 @@
   .mono{font-family:'JetBrains Mono',monospace;}
   .wrap{max-width:1120px; margin:0 auto; padding:0 40px;}
 
-  nav{border-bottom:1px solid var(--line); background:rgba(251,251,253,.92); backdrop-filter:blur(20px); position:sticky; top:0; z-index:10;}
+  /* Animaciones de entrada */
+  @keyframes fadeUp{from{opacity:0; transform:translateY(28px);}to{opacity:1; transform:translateY(0);}}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  @keyframes floaty{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+  @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(0,113,227,.35);}50%{box-shadow:0 0 0 14px rgba(0,113,227,0);}}
+  @keyframes gradientShift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+  @keyframes shimmer{0%{background-position:-200% 0;}100%{background-position:200% 0;}}
+  @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @keyframes blink{50%{opacity:0;}}
+  @keyframes modalIn{from{transform:scale(.92); opacity:0;}to{transform:scale(1); opacity:1;}}
+
+  .reveal{opacity:0; transform:translateY(30px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  nav{border-bottom:1px solid var(--line); background:rgba(251,251,253,.92); backdrop-filter:blur(20px); position:sticky; top:0; z-index:10; animation:fadeIn .6s ease;}
   .nav-inner{display:flex; align-items:center; justify-content:space-between; padding:16px 0;}
   .logo{font-weight:700; font-size:15px; letter-spacing:-.01em;}
   .logo .blink{display:inline-block; width:8px; height:16px; background:var(--fg); margin-left:2px; vertical-align:-3px; animation:blink 1.1s step-end infinite; border-radius:2px;}
-  @keyframes blink{50%{opacity:0;}}
   .nav-links{display:flex; gap:24px; font-size:13.5px; color:var(--gray);}
-  .nav-links a{transition:color .15s;}
+  .nav-links a{transition:color .15s, transform .15s; position:relative;}
+  .nav-links a::after{content:""; position:absolute; left:0; bottom:-4px; width:0; height:2px; background:var(--accent); transition:width .25s;}
   .nav-links a:hover{color:var(--fg);}
-  .nav-cta{border:1px solid var(--line); padding:8px 16px; font-size:13px; font-weight:600; border-radius:10px; background:var(--fg); color:#fff; transition:opacity .15s;}
-  .nav-cta:hover{opacity:.85;}
+  .nav-links a:hover::after{width:100%;}
+  .nav-cta{border:1px solid var(--line); padding:8px 16px; font-size:13px; font-weight:600; border-radius:10px; background:var(--fg); color:#fff; transition:opacity .15s, transform .15s;}
+  .nav-cta:hover{opacity:.85; transform:translateY(-1px);}
 
   .hero{padding:100px 0 70px; position:relative; overflow:hidden;}
   .hero-watermark{
     position:absolute; top:-40px; right:-30px; font-size:200px; font-weight:800; color:transparent;
-    -webkit-text-stroke:1px #e9e9ec; z-index:0; user-select:none; line-height:1;
+    -webkit-text-stroke:1px #e9e9ec; z-index:0; user-select:none; line-height:1; animation:floaty 6s ease-in-out infinite;
   }
-  .kicker{font-size:12.5px; color:var(--gray); display:flex; align-items:center; gap:8px; margin-bottom:28px; position:relative; z-index:1;}
+  .hero::before{
+    content:""; position:absolute; top:-120px; right:-80px; width:420px; height:420px; border-radius:50%;
+    background:radial-gradient(circle, rgba(0,113,227,.10), transparent 70%); filter:blur(10px); z-index:0; animation:floaty 8s ease-in-out infinite;
+  }
+  .kicker{font-size:12.5px; color:var(--gray); display:flex; align-items:center; gap:8px; margin-bottom:28px; position:relative; z-index:1; animation:fadeUp .7s ease .1s both;}
   .kicker .dash{width:26px; height:2px; background:var(--dim); border-radius:2px;}
-  h1{font-size:clamp(42px,6vw,78px); font-weight:800; line-height:1.02; letter-spacing:-.03em; position:relative; z-index:1;}
-  .hero-text{max-width:520px; margin-top:36px; position:relative; z-index:1;}
+  h1{font-size:clamp(42px,6vw,78px); font-weight:800; line-height:1.02; letter-spacing:-.03em; position:relative; z-index:1; animation:fadeUp .7s ease .2s both;}
+  .hero-text{max-width:520px; margin-top:36px; position:relative; z-index:1; animation:fadeUp .7s ease .3s both;}
   .hero-text p{color:#3f3f44; font-size:15.5px; line-height:1.75;}
   .cta-row{display:flex; gap:12px; margin-top:30px;}
-  .btn{padding:13px 24px; font-size:13.5px; font-weight:600; border-radius:12px;}
-  .btn-primary{background:var(--fg); color:#fff; transition:opacity .15s;}
-  .btn-primary:hover{opacity:.85;}
-  .btn-outline{border:1px solid var(--line); color:var(--fg); transition:background .15s;}
-  .btn-outline:hover{background:#f2f2f4;}
+  .btn{padding:13px 24px; font-size:13.5px; font-weight:600; border-radius:12px; transition:all .2s ease; position:relative; overflow:hidden;}
+  .btn-primary{background:var(--fg); color:#fff;}
+  .btn-primary:hover{opacity:.85; transform:translateY(-2px);}
+  .btn-outline{border:1px solid var(--line); color:var(--fg);}
+  .btn-outline:hover{background:#f2f2f4; transform:translateY(-2px);}
+  .btn-accent{background:linear-gradient(135deg, var(--accent), var(--accent2)); background-size:200% 200%; color:#fff; animation:gradientShift 4s ease infinite;}
+  .btn-accent:hover{transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,113,227,.3);}
 
   .ticker-wrap{border-top:1px solid var(--line); border-bottom:1px solid var(--line); overflow:hidden; padding:16px 0;}
   .ticker{display:flex; gap:46px; white-space:nowrap; animation:scroll 22s linear infinite; width:max-content;}
-  @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  .ticker:hover{animation-play-state:paused;}
   .ticker span{font-size:15px; color:var(--dim); font-weight:500;}
   .ticker span.on{color:var(--fg);}
 
@@ -78,12 +99,13 @@
     transition:transform .18s, box-shadow .18s;
     cursor:pointer;
   }
-  .project-card:hover{transform:translateY(-4px); box-shadow:0 2px 4px rgba(0,0,0,.05), 0 16px 40px rgba(0,0,0,.10);}
+  .project-card:hover{transform:translateY(-8px); box-shadow:0 2px 4px rgba(0,0,0,.05), 0 20px 48px rgba(0,0,0,.12);}
+  .project-card:hover .pc-media img{transform:scale(1.04);}
   .pc-head{padding:22px 24px;}
   .pc-num{font-size:12px; color:var(--dim); font-family:'JetBrains Mono',monospace;}
   .pc-name{font-size:24px; font-weight:700; letter-spacing:-.01em; margin-top:6px;}
-  .pc-media{background:#f6f6f8; display:flex; align-items:center; justify-content:center; padding:26px; min-height:220px;}
-  .pc-media img{max-width:100%; max-height:300px; border-radius:14px; box-shadow:0 6px 22px rgba(0,0,0,.12);}
+  .pc-media{background:#f6f6f8; display:flex; align-items:center; justify-content:center; padding:26px; min-height:220px; overflow:hidden;}
+  .pc-media img{max-width:100%; max-height:300px; border-radius:14px; box-shadow:0 6px 22px rgba(0,0,0,.12); transition:transform .4s ease;}
   .pc-foot{padding:20px 24px;}
   .pc-desc{color:var(--gray); font-size:14px; line-height:1.6;}
   .pc-hint{font-size:12px; color:var(--dim); margin-top:10px; display:flex; align-items:center; gap:6px;}
@@ -98,12 +120,11 @@
   .modal{
     background:#fff; border-radius:24px; max-width:560px; width:calc(100% - 40px);
     max-height:88vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,.18);
-    animation:modalIn .22s ease;
+    animation:modalIn .25s ease;
   }
-  @keyframes modalIn{from{transform:scale(.94); opacity:0;}to{transform:scale(1); opacity:1;}}
   .modal-head{padding:20px 24px; display:flex; justify-content:space-between; align-items:center;}
   .modal-head h3{font-size:22px; font-weight:700; letter-spacing:-.01em;}
-  .modal-close{background:none; border:none; font-size:22px; color:var(--gray); cursor:pointer; line-height:1; padding:4px 8px; border-radius:8px;}
+  .modal-close{background:none; border:none; font-size:22px; color:var(--gray); cursor:pointer; line-height:1; padding:4px 8px; border-radius:8px; transition:background .15s;}
   .modal-close:hover{background:#f2f2f4; color:var(--fg);}
   .modal-media{background:#f6f6f8; display:flex; align-items:center; justify-content:center; padding:22px; min-height:200px;}
   .modal-media img{max-width:100%; max-height:320px; border-radius:14px; box-shadow:0 6px 22px rgba(0,0,0,.12);}
@@ -117,16 +138,24 @@
   .modal-link:hover{border-bottom-color:var(--accent);}
 
   /* Sección Precios */
-  .pricing-choose{display:flex; justify-content:center; gap:16px; margin-top:30px;}
+  .pricing-choose{display:flex; justify-content:center; gap:16px; margin-top:30px; animation:fadeUp .6s ease;}
   .pricing-choose .btn{padding:14px 30px;}
+  .pricing-choose .btn.active{background:linear-gradient(135deg, var(--accent), var(--accent2)); color:#fff; border-color:transparent;}
   .pricing-cards{display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin-top:40px;}
   .price-card{
     background:#fff; border:1px solid var(--line); border-radius:var(--radius);
     width:240px; padding:26px 22px; text-align:center;
     box-shadow:0 1px 2px rgba(0,0,0,.03), 0 8px 24px rgba(0,0,0,.06);
     transition:transform .18s, box-shadow .18s;
+    animation:fadeUp .5s ease both;
   }
-  .price-card:hover{transform:translateY(-4px); box-shadow:0 2px 4px rgba(0,0,0,.05), 0 16px 40px rgba(0,0,0,.10);}
+  .price-card:hover{transform:translateY(-6px); box-shadow:0 2px 4px rgba(0,0,0,.05), 0 20px 44px rgba(0,0,0,.12);}
+  .price-card.featured{border:2px solid var(--accent); position:relative;}
+  .price-card.featured::before{
+    content:"★"; position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+    background:linear-gradient(135deg, var(--accent), var(--accent2)); color:#fff; width:26px; height:26px;
+    border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px;
+  }
   .price-card .pc-tag{font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.05em;}
   .price-card h4{font-size:19px; font-weight:700; margin-top:6px;}
   .price-card .price{font-size:26px; font-weight:800; margin-top:14px;}
@@ -137,8 +166,12 @@
   .price-card .btn{width:100%; margin-top:18px;}
 
   /* contact — split panel treatment */
-  .contact-split{border-top:1px solid var(--line); background:#0d0d0f; color:#fff;}
-  .contact-inner{display:flex; align-items:center; gap:60px; padding:90px 0;}
+  .contact-split{border-top:1px solid var(--line); background:#0d0d0f; color:#fff; position:relative; overflow:hidden;}
+  .contact-split::before{
+    content:""; position:absolute; bottom:-100px; left:-80px; width:360px; height:360px; border-radius:50%;
+    background:radial-gradient(circle, rgba(0,113,227,.15), transparent 70%); filter:blur(10px);
+  }
+  .contact-inner{display:flex; align-items:center; gap:60px; padding:90px 0; position:relative; z-index:1;}
   .contact-left h2{color:#fff; font-size:clamp(30px,4vw,44px);}
   .contact-left p{color:#9a9aa0; margin-top:14px; font-size:14.5px; max-width:360px;}
   .contact-right{flex-shrink:0; display:flex; flex-direction:column; gap:14px; align-items:flex-start;}
@@ -153,6 +186,7 @@
   .page{display:none; min-height:calc(100vh - 60px);}
   .page.active{display:block;}
   .nav-links a.active{color:var(--fg);}
+  .nav-links a.active::after{width:100%;}
 
   footer{padding:28px 0; display:flex; justify-content:space-between; font-size:12.5px; color:var(--dim);}
 
@@ -189,7 +223,8 @@
     <div class="hero-text">
       <p>Soy Emmanuel, desarrollador full-stack. Diseño y construyo aplicaciones, APIs y paneles que funcionan bien el primer día y siguen funcionando bien un año después. También hago bots de Discord y todo lo que necesite tu comunidad.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#proyectos" data-link="proyectos">Ver proyectos</a>
+        <a class="btn btn-accent" href="#precios" data-link="precios">Ver precios</a>
+        <a class="btn btn-outline" href="#proyectos" data-link="proyectos">Proyectos</a>
       </div>
     </div>
   </div>
@@ -206,11 +241,11 @@
 
 <section class="section">
   <div class="wrap grid-2">
-    <div>
+    <div class="reveal">
       <div class="section-label mono"><span class="num">01</span> / SOBRE MÍ</div>
       <h2>Dos años construyendo cosas que se quedan en producción.</h2>
     </div>
-    <div>
+    <div class="reveal">
       <p style="color:#3f3f44; font-size:15px; line-height:1.75;">Trabajo con clientes directos.</p>
     </div>
   </div>
@@ -220,12 +255,14 @@
 <div class="page" id="page-proyectos">
 <section class="section">
   <div class="wrap">
-    <div class="section-label mono"><span class="num">02</span> / PROYECTOS SELECCIONADOS</div>
-    <h2 style="margin-bottom:10px;">Trabajo reciente</h2>
+    <div class="reveal">
+      <div class="section-label mono"><span class="num">02</span> / PROYECTOS SELECCIONADOS</div>
+      <h2 style="margin-bottom:10px;">Trabajo reciente</h2>
+    </div>
 
     <div class="projects-grid">
 
-      <article class="project-card" onclick="openModal('bot')">
+      <article class="project-card reveal" onclick="openModal('bot')">
         <div class="pc-head">
           <div class="pc-num">01</div>
           <h3 class="pc-name">Bot Medellín RP</h3>
@@ -239,7 +276,7 @@
         </div>
       </article>
 
-      <article class="project-card" onclick="openModal('dash')">
+      <article class="project-card reveal" onclick="openModal('dash')">
         <div class="pc-head">
           <div class="pc-num">02</div>
           <h3 class="pc-name">Dashboard Medellín RP</h3>
@@ -261,12 +298,14 @@
 <div class="page" id="page-precios">
 <section class="section">
   <div class="wrap">
-    <div class="section-label mono"><span class="num">03</span> / PRECIOS</div>
-    <h2 style="margin-bottom:10px;">Elige qué necesitas</h2>
+    <div class="reveal">
+      <div class="section-label mono"><span class="num">03</span> / PRECIOS</div>
+      <h2 style="margin-bottom:10px;">Elige qué necesitas</h2>
+    </div>
 
     <div class="pricing-choose">
-      <a class="btn btn-primary" href="javascript:void(0)" onclick="showPricing('bots')">🤖 Bots</a>
-      <a class="btn btn-outline" href="javascript:void(0)" onclick="showPricing('webs')">🌐 Webs</a>
+      <a class="btn btn-primary active" id="btn-bots" href="javascript:void(0)" onclick="showPricing('bots')">🤖 Bots</a>
+      <a class="btn btn-outline" id="btn-webs" href="javascript:void(0)" onclick="showPricing('webs')">🌐 Webs</a>
     </div>
 
     <div class="pricing-cards" id="pricing-cards">
@@ -279,11 +318,11 @@
 <div class="page" id="page-contacto">
 <div class="contact-split">
   <div class="wrap contact-inner">
-    <div class="contact-left">
+    <div class="contact-left reveal">
       <h2>¿Construimos algo juntos?</h2>
       <p>Cuéntame qué necesitas y te respondo en menos de 24 horas.</p>
     </div>
-    <div class="contact-right">
+    <div class="contact-right reveal">
       <a class="btn btn-primary" href="javascript:void(0)" onclick="document.getElementById('discord-tag').style.display='inline-flex'">Escribir a Emmanuel</a>
       <span id="discord-tag" class="mono ticked" style="display:none; border:1px solid var(--line); padding:12px 18px; font-size:13.5px; font-weight:700;">Discord: emma062013</span>
     </div>
@@ -344,33 +383,42 @@
       { tag:"Bot", name:"10 comandos", price:"$15", feats:["10 comandos","Configuración básica","Soporte 1 mes"] },
       { tag:"Bot", name:"20 comandos", price:"$25", feats:["20 comandos","Roles y moderación","Soporte 2 meses"] },
       { tag:"Bot", name:"30 comandos", price:"$35", feats:["30 comandos","Tickets y economía","Soporte 3 meses"] },
-      { tag:"Bot", name:"40 comandos", price:"$50", feats:["40 comandos","Todo incluido","Soporte 6 meses"] }
+      { tag:"Bot", name:"40 comandos", price:"$50", featured:true, feats:["40 comandos","Todo incluido","Soporte 6 meses"] }
     ],
     webs: [
-      { tag:"Web", name:"Sin base de datos", price:"$40", feats:["Web estática","Diseño responsive","Soporte 1 mes"] },
-      { tag:"Web", name:"Con base de datos", price:"$70", feats:["Panel de gestión","Base de datos","Soporte 3 meses"] },
-      { tag:"Web", name:"Web + API", price:"$100", feats:["API completa","Tiempo real","Soporte 6 meses"] }
+      { tag:"Web", name:"Bot sin base de datos", price:"$40", feats:["Bot básico","Sin base de datos","Soporte 1 mes"] },
+      { tag:"Web", name:"Dashboard básica", price:"$60", feats:["Panel simple","Estadísticas","Soporte 2 meses"] },
+      { tag:"Web", name:"Dashboard normal", price:"$80", feats:["Panel completo","Base de datos","Soporte 3 meses"] },
+      { tag:"Web", name:"Dashboard premium", price:"$120", featured:true, feats:["Todo incluido","Tiempo real","Soporte 6 meses"] }
     ]
   };
 
   function showPricing(type){
     var cards = pricing[type];
     var html = '';
-    cards.forEach(function(c){
-      html += '<div class="price-card">'
+    cards.forEach(function(c, i){
+      html += '<div class="price-card'+(c.featured?' featured':'')+'" style="animation-delay:'+(i*0.08)+'s">'
         + '<div class="pc-tag">'+c.tag+'</div>'
         + '<h4>'+c.name+'</h4>'
         + '<div class="price">'+c.price+'<small> USD</small></div>'
         + '<ul class="pc-feats">';
       c.feats.forEach(function(f){ html += '<li>'+f+'</li>'; });
       html += '</ul>'
-        + '<a class="btn btn-primary" href="#contacto" data-link="contacto" onclick="closePricing()">Elegir</a>'
+        + '<a class="btn '+(c.featured?'btn-accent':'btn-primary')+'" href="#contacto" data-link="contacto">Elegir</a>'
         + '</div>';
     });
     document.getElementById('pricing-cards').innerHTML = html;
-  }
 
-  function closePricing(){}
+    var btnBots = document.getElementById('btn-bots');
+    var btnWebs = document.getElementById('btn-webs');
+    if(type === 'bots'){
+      btnBots.className = 'btn btn-primary active';
+      btnWebs.className = 'btn btn-outline';
+    } else {
+      btnBots.className = 'btn btn-outline';
+      btnWebs.className = 'btn btn-primary active';
+    }
+  }
 
   function openModal(key){
     var p = projects[key];
@@ -406,6 +454,13 @@
     document.querySelectorAll('.nav-links a, .logo, .nav-cta').forEach(a=>a.classList.remove('active'));
     document.querySelectorAll('[data-link="'+name+'"]').forEach(a=>a.classList.add('active'));
     window.scrollTo(0,0);
+    // animar reveal
+    setTimeout(function(){
+      target.querySelectorAll('.reveal').forEach(function(el){
+        var r = el.getBoundingClientRect();
+        if(r.top < window.innerHeight - 60) el.classList.add('in');
+      });
+    }, 50);
   }
   function routeFromHash(){
     var name = (location.hash || '#inicio').replace('#','');
@@ -413,6 +468,14 @@
   }
   window.addEventListener('hashchange', routeFromHash);
   routeFromHash();
+
+  // Observador de scroll para animaciones reveal
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); observer.unobserve(e.target); }
+    });
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){ observer.observe(el); });
 </script>
 
 </body>
