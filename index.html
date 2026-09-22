@@ -10,7 +10,7 @@
 <style>
   :root{
     --bg:#fbfbfd; --line:#e5e5e7; --fg:#1d1d1f; --gray:#6e6e73; --dim:#c7c7cc;
-    --accent:#0071e3; --radius:18px;
+    --accent:#0071e3; --radius:20px;
     box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
   }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -20,7 +20,7 @@
     background-image:radial-gradient(#f2f2f4 1px, transparent 1px);
     background-size:24px 24px;
     overflow-x:hidden;
-    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    text-rendering:optimizeLegibility;
   }
   a{color:inherit; text-decoration:none;}
   .mono{font-family:'JetBrains Mono',monospace;}
@@ -66,19 +66,28 @@
   .section-label .num{color:var(--dim);}
   h2{font-size:30px; font-weight:700; letter-spacing:-.01em; line-height:1.2;}
 
-  /* work list — distinct row-based treatment */
-  .work-list{border-top:1px solid var(--fg);}
-  .work-row{
-    display:flex; align-items:center; gap:28px; padding:28px 0; border-bottom:1px solid var(--line);
-    transition:padding-left .18s;
+  /* Proyectos — tarjetas estilo Apple: nombre arriba, imagen al centro, descripción abajo */
+  .projects-grid{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:32px;
+    margin-top:36px;
   }
-  .work-row:hover{padding-left:10px;}
-  .work-num{font-size:13px; color:var(--dim); width:34px; flex-shrink:0;}
-  .work-name{font-size:22px; font-weight:700; flex:1; min-width:180px;}
-  .work-desc{color:var(--gray); font-size:13.5px; flex:1.4; line-height:1.55;}
-  .work-link{font-size:13px; font-weight:600; white-space:nowrap; border-bottom:1px solid var(--fg); transition:border-color .15s;}
-  .work-link:hover{border-color:var(--accent); color:var(--accent);}
-  .work-row img{width:200px; border:1px solid var(--line); border-radius:var(--radius); box-shadow:0 4px 18px rgba(0,0,0,.08); align-self:center;}
+  .project-card{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+    padding:0; overflow:hidden; display:flex; flex-direction:column;
+    box-shadow:0 1px 2px rgba(0,0,0,.03), 0 8px 24px rgba(0,0,0,.06);
+    transition:transform .18s, box-shadow .18s;
+  }
+  .project-card:hover{transform:translateY(-4px); box-shadow:0 2px 4px rgba(0,0,0,.05), 0 16px 40px rgba(0,0,0,.10);}
+  .pc-head{padding:22px 24px;}
+  .pc-num{font-size:12px; color:var(--dim); font-family:'JetBrains Mono',monospace;}
+  .pc-name{font-size:24px; font-weight:700; letter-spacing:-.01em; margin-top:6px;}
+  .pc-media{background:#f6f6f8; display:flex; align-items:center; justify-content:center; padding:26px; min-height:220px;}
+  .pc-media img{max-width:100%; max-height:300px; border-radius:14px; box-shadow:0 6px 22px rgba(0,0,0,.12);}
+  .pc-link{display:inline-flex; align-items:center; gap:6px; color:var(--accent); font-weight:600; font-size:13.5px; border-bottom:1px solid transparent; transition:border-color .15s;}
+  .pc-link:hover{border-bottom-color:var(--accent);}
+  .pc-foot{padding:20px 24px;}
+  .pc-desc{color:var(--gray); font-size:14px; line-height:1.6;}
+  .pc-foot .pc-link{margin-top:14px; display:block;}
 
   /* contact — split panel treatment */
   .contact-split{border-top:1px solid var(--line); background:#0d0d0f; color:#fff;}
@@ -89,10 +98,8 @@
   .contact-right .btn-primary{background:#fff; color:#0d0d0f; border-radius:12px;}
   .contact-right #discord-tag{border-color:#333; color:#fff;}
 
-  @media (max-width:700px){
-    .work-row{flex-wrap:wrap;}
-    .work-row img{width:100%; max-width:260px;}
-    .contact-inner{flex-direction:column; align-items:flex-start; gap:24px;}
+  @media (max-width:800px){
+    .projects-grid{grid-template-columns:1fr;}
   }
 
   .page{display:none; min-height:calc(100vh - 60px);}
@@ -166,20 +173,36 @@
 <section class="section">
   <div class="wrap">
     <div class="section-label mono"><span class="num">02</span> / PROYECTOS SELECCIONADOS</div>
-    <h2 style="margin-bottom:34px;">Trabajo reciente</h2>
-    <div class="work-list">
-      <div class="work-row">
-        <span class="work-num mono">01</span>
-        <span class="work-name">Bot Medellín RP</span>
-        <span class="work-desc">Bot de Discord con sistema de tickets, moderación y roles automáticos.</span>
-        <img src="https://cdn.discordapp.com/attachments/1255629564437331991/1551938682234081350/image.png?ex=6ab3cb07&is=6ab27987&hm=a255a75badfcbf12295c639c2ee06abb7e46726a7f40b4b5ca9c5dbf4fdc414e&" alt="Sistema de identificación Medellín RP">
-      </div>
-      <div class="work-row">
-        <span class="work-num mono">02</span>
-        <span class="work-name">Dashboard Medellín RP</span>
-        <span class="work-desc">Panel web de gestión y estadísticas, conectado en tiempo real con el bot.</span>
-        <a class="work-link" href="https://medellin-rp.duckdns.org/" target="_blank" rel="noopener">Ver sitio →</a>
-      </div>
+    <h2 style="margin-bottom:10px;">Trabajo reciente</h2>
+
+    <div class="projects-grid">
+
+      <article class="project-card">
+        <div class="pc-head">
+          <div class="pc-num">01</div>
+          <h3 class="pc-name">Bot Medellín RP</h3>
+        </div>
+        <div class="pc-media">
+          <img src="https://cdn.discordapp.com/attachments/1255629564437331991/1551938682234081350/image.png?ex=6ab3cb07&is=6ab27987&hm=a255a75badfcbf12295c639c2ee06abb7e46726a7f40b4b5ca9c5dbf4fdc414e&" alt="Sistema de identificación Medellín RP">
+        </div>
+        <div class="pc-foot">
+          <p class="pc-desc">Bot de Discord con sistema de tickets, moderación y roles automáticos.</p>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div class="pc-head">
+          <div class="pc-num">02</div>
+          <h3 class="pc-name">Dashboard Medellín RP</h3>
+        </div>
+        <div class="pc-media">
+          <div style="color:var(--gray); font-size:14px;">Panel web de gestión y estadísticas, conectado en tiempo real con el bot.</div>
+        </div>
+        <div class="pc-foot">
+          <a class="pc-link" href="https://medellin-rp.duckdns.org/" target="_blank" rel="noopener">Ver sitio →</a>
+        </div>
+      </article>
+
     </div>
   </div>
 </section>
