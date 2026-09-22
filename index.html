@@ -31,7 +31,7 @@
   .logo{font-weight:700; font-size:15px; letter-spacing:-.01em;}
   .logo .blink{display:inline-block; width:8px; height:16px; background:var(--fg); margin-left:2px; vertical-align:-3px; animation:blink 1.1s step-end infinite; border-radius:2px;}
   @keyframes blink{50%{opacity:0;}}
-  .nav-links{display:flex; gap:28px; font-size:13.5px; color:var(--gray);}
+  .nav-links{display:flex; gap:24px; font-size:13.5px; color:var(--gray);}
   .nav-links a{transition:color .15s;}
   .nav-links a:hover{color:var(--fg);}
   .nav-cta{border:1px solid var(--line); padding:8px 16px; font-size:13px; font-weight:600; border-radius:10px; background:var(--fg); color:#fff; transition:opacity .15s;}
@@ -88,7 +88,7 @@
   .pc-desc{color:var(--gray); font-size:14px; line-height:1.6;}
   .pc-hint{font-size:12px; color:var(--dim); margin-top:10px; display:flex; align-items:center; gap:6px;}
 
-  /* Modal de detalle */
+  /* Modal de detalle de proyectos */
   .modal-overlay{
     position:fixed; inset:0; background:rgba(13,13,15,.55); backdrop-filter:blur(6px);
     display:none; align-items:center; justify-content:center; z-index:100;
@@ -116,6 +116,26 @@
   .modal-link{display:inline-flex; align-items:center; gap:6px; color:var(--accent); font-weight:600; font-size:13.5px; margin-top:14px; border-bottom:1px solid transparent; transition:border-color .15s;}
   .modal-link:hover{border-bottom-color:var(--accent);}
 
+  /* Sección Precios */
+  .pricing-choose{display:flex; justify-content:center; gap:16px; margin-top:30px;}
+  .pricing-choose .btn{padding:14px 30px;}
+  .pricing-cards{display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin-top:40px;}
+  .price-card{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+    width:240px; padding:26px 22px; text-align:center;
+    box-shadow:0 1px 2px rgba(0,0,0,.03), 0 8px 24px rgba(0,0,0,.06);
+    transition:transform .18s, box-shadow .18s;
+  }
+  .price-card:hover{transform:translateY(-4px); box-shadow:0 2px 4px rgba(0,0,0,.05), 0 16px 40px rgba(0,0,0,.10);}
+  .price-card .pc-tag{font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.05em;}
+  .price-card h4{font-size:19px; font-weight:700; margin-top:6px;}
+  .price-card .price{font-size:26px; font-weight:800; margin-top:14px;}
+  .price-card .price small{font-size:13px; color:var(--gray);}
+  .price-card .pc-feats{list-style:none; padding:0; margin:14px 0 0; text-align:left;}
+  .price-card .pc-feats li{font-size:12.5px; color:var(--gray); padding:6px 0; display:flex; align-items:center; gap:8px;}
+  .price-card .pc-feats li::before{content:"✓"; color:var(--accent); font-weight:700;}
+  .price-card .btn{width:100%; margin-top:18px;}
+
   /* contact — split panel treatment */
   .contact-split{border-top:1px solid var(--line); background:#0d0d0f; color:#fff;}
   .contact-inner{display:flex; align-items:center; gap:60px; padding:90px 0;}
@@ -127,6 +147,7 @@
 
   @media (max-width:800px){
     .projects-grid{grid-template-columns:1fr;}
+    .pricing-cards{flex-direction:column; align-items:center;}
   }
 
   .page{display:none; min-height:calc(100vh - 60px);}
@@ -151,7 +172,7 @@
   <div class="wrap nav-inner">
     <a href="#inicio" class="logo mono" data-link="inicio">dev_emmanuel<span class="blink"></span></a>
     <div class="nav-links mono">
-      <a href="#inicio" data-link="inicio">inicio</a><a href="#proyectos" data-link="proyectos">proyectos</a><a href="#contacto" data-link="contacto">contacto</a>
+      <a href="#inicio" data-link="inicio">inicio</a><a href="#proyectos" data-link="proyectos">proyectos</a><a href="#precios" data-link="precios">precios</a><a href="#contacto" data-link="contacto">contacto</a>
     </div>
     <a class="nav-cta mono" href="#contacto" data-link="contacto">Contactar</a>
   </div>
@@ -237,6 +258,24 @@
 </section>
 </div>
 
+<div class="page" id="page-precios">
+<section class="section">
+  <div class="wrap">
+    <div class="section-label mono"><span class="num">03</span> / PRECIOS</div>
+    <h2 style="margin-bottom:10px;">Elige qué necesitas</h2>
+
+    <div class="pricing-choose">
+      <a class="btn btn-primary" href="javascript:void(0)" onclick="showPricing('bots')">🤖 Bots</a>
+      <a class="btn btn-outline" href="javascript:void(0)" onclick="showPricing('webs')">🌐 Webs</a>
+    </div>
+
+    <div class="pricing-cards" id="pricing-cards">
+      <!-- Se rellena por JS -->
+    </div>
+  </div>
+</section>
+</div>
+
 <div class="page" id="page-contacto">
 <div class="contact-split">
   <div class="wrap contact-inner">
@@ -257,11 +296,10 @@
 <footer>
   <div class="wrap" style="display:flex; justify-content:space-between; width:100%;">
     <span class="mono">© 2026 dev_emmanuel</span>
-    <span class="mono">Hecho con código y café.</span>
   </div>
 </footer>
 
-<!-- Modal -->
+<!-- Modal de detalle de proyectos -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-head">
@@ -301,9 +339,41 @@
     }
   };
 
+  var pricing = {
+    bots: [
+      { tag:"Bot", name:"10 comandos", price:"$15", feats:["10 comandos","Configuración básica","Soporte 1 mes"] },
+      { tag:"Bot", name:"20 comandos", price:"$25", feats:["20 comandos","Roles y moderación","Soporte 2 meses"] },
+      { tag:"Bot", name:"30 comandos", price:"$35", feats:["30 comandos","Tickets y economía","Soporte 3 meses"] },
+      { tag:"Bot", name:"40 comandos", price:"$50", feats:["40 comandos","Todo incluido","Soporte 6 meses"] }
+    ],
+    webs: [
+      { tag:"Web", name:"Sin base de datos", price:"$40", feats:["Web estática","Diseño responsive","Soporte 1 mes"] },
+      { tag:"Web", name:"Con base de datos", price:"$70", feats:["Panel de gestión","Base de datos","Soporte 3 meses"] },
+      { tag:"Web", name:"Web + API", price:"$100", feats:["API completa","Tiempo real","Soporte 6 meses"] }
+    ]
+  };
+
+  function showPricing(type){
+    var cards = pricing[type];
+    var html = '';
+    cards.forEach(function(c){
+      html += '<div class="price-card">'
+        + '<div class="pc-tag">'+c.tag+'</div>'
+        + '<h4>'+c.name+'</h4>'
+        + '<div class="price">'+c.price+'<small> USD</small></div>'
+        + '<ul class="pc-feats">';
+      c.feats.forEach(function(f){ html += '<li>'+f+'</li>'; });
+      html += '</ul>'
+        + '<a class="btn btn-primary" href="#contacto" data-link="contacto" onclick="closePricing()">Elegir</a>'
+        + '</div>';
+    });
+    document.getElementById('pricing-cards').innerHTML = html;
+  }
+
+  function closePricing(){}
+
   function openModal(key){
     var p = projects[key];
-    document.getElementById('m-title').textContent = p.title;
     document.getElementById('m-title').textContent = p.title;
     document.getElementById('m-media').innerHTML = '<img src="'+p.img+'" alt="'+p.title+'">';
     var html = '<p>'+p.desc+'</p><ul>';
